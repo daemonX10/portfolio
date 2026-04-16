@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Image from "next/image";
 import type { Project } from "@/data/portfolio";
 
 type ProjectGalleryProps = {
@@ -15,6 +14,7 @@ export default function ProjectGallery({ projects }: ProjectGalleryProps) {
   }, [projects]);
 
   const [activeCategory, setActiveCategory] = useState<string>("All");
+  const [openProject, setOpenProject] = useState<string | null>(null);
 
   const filteredProjects = useMemo(() => {
     if (activeCategory === "All") {
@@ -48,21 +48,16 @@ export default function ProjectGallery({ projects }: ProjectGalleryProps) {
             className="project-card-reveal overflow-hidden rounded-2xl border border-[#d6deea] bg-white"
             style={{ animationDelay: `${Math.min(index, 8) * 70}ms` }}
           >
-            {project.links.image ? (
-              <div className="relative h-42 w-full">
-                <Image
-                  className="object-cover"
-                  src={project.links.image}
-                  alt={`${project.name} preview`}
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                />
-              </div>
-            ) : null}
             <div className="space-y-4 p-5">
               <div>
                 <p className="text-xs uppercase tracking-[0.16em] text-[#5676a3]">{project.period}</p>
-                <h4 className="mt-1 text-xl font-extrabold text-[#12233f]">{project.name}</h4>
+                <button
+                  type="button"
+                  onClick={() => setOpenProject((prev) => (prev === project.name ? null : project.name))}
+                  className="mt-1 cursor-pointer text-left text-xl font-extrabold text-[#12233f] underline-offset-4 hover:underline"
+                >
+                  {project.name}
+                </button>
                 <p className="mt-2 inline-flex rounded-full bg-[#e8f1ff] px-3 py-1 text-xs font-bold uppercase tracking-[0.1em] text-[#2f578b]">
                   {project.category}
                 </p>
@@ -77,34 +72,44 @@ export default function ProjectGallery({ projects }: ProjectGalleryProps) {
                 ))}
               </div>
 
-              <ul className="list-disc space-y-1 pl-5 text-sm text-[#2a446e]">
-                {project.outcomes.map((result) => (
-                  <li key={result}>{result}</li>
-                ))}
-              </ul>
+              {openProject === project.name ? (
+                <div className="rounded-xl border border-[#d6deea] bg-[#f9fbff] p-4">
+                  <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#3f6396]">GitHub and Project Links</p>
+                  <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-[#2a446e]">
+                    {project.outcomes.map((result) => (
+                      <li key={result}>{result}</li>
+                    ))}
+                  </ul>
 
-              <div className="flex flex-wrap gap-2 text-sm font-bold">
-                {project.links.code ? (
-                  <a className="action-btn ghost !px-3 !py-2" href={project.links.code} target="_blank" rel="noreferrer">
-                    Code
-                  </a>
-                ) : null}
-                {project.links.data ? (
-                  <a className="action-btn ghost !px-3 !py-2" href={project.links.data} target="_blank" rel="noreferrer">
-                    Data
-                  </a>
-                ) : null}
-                {project.links.image ? (
-                  <a className="action-btn ghost !px-3 !py-2" href={project.links.image} target="_blank" rel="noreferrer">
-                    Image
-                  </a>
-                ) : null}
-                {project.links.live ? (
-                  <a className="action-btn ghost !px-3 !py-2" href={project.links.live} target="_blank" rel="noreferrer">
-                    Live
-                  </a>
-                ) : null}
-              </div>
+                  <div className="mt-4 flex flex-wrap gap-2 text-sm font-bold">
+                    {project.links.code ? (
+                      <a className="action-btn primary !px-3 !py-2" href={project.links.code} target="_blank" rel="noreferrer">
+                        Open GitHub
+                      </a>
+                    ) : null}
+                    {project.links.code ? (
+                      <a className="action-btn ghost !px-3 !py-2" href={project.links.code} target="_blank" rel="noreferrer">
+                        Code
+                      </a>
+                    ) : null}
+                    {project.links.data ? (
+                      <a className="action-btn ghost !px-3 !py-2" href={project.links.data} target="_blank" rel="noreferrer">
+                        Data
+                      </a>
+                    ) : null}
+                    {project.links.image ? (
+                      <a className="action-btn ghost !px-3 !py-2" href={project.links.image} target="_blank" rel="noreferrer">
+                        Image
+                      </a>
+                    ) : null}
+                    {project.links.live ? (
+                      <a className="action-btn ghost !px-3 !py-2" href={project.links.live} target="_blank" rel="noreferrer">
+                        Live
+                      </a>
+                    ) : null}
+                  </div>
+                </div>
+              ) : null}
             </div>
           </article>
         ))}

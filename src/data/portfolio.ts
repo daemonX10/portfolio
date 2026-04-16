@@ -58,8 +58,8 @@ export const primarySocialOrder = [
 export const quickProof = [
   { label: "LeetCode Rating", value: "1732" },
   { label: "Problems Solved", value: "601+" },
-  { label: "Kaggle Public Profile", value: "Active" },
-  { label: "Education", value: "BE CSE · CGPA 9.2" },
+  { label: "Kaggle", value: "3x ML Competition Winner" },
+  { label: "Education", value: "BE CSE · 9.2 CGPA" },
 ];
 
 export const proofSources = [
@@ -276,52 +276,59 @@ export const experience = [
 
 export const skillGroups = [
   {
-    group: "AI / ML / DL",
-    image: "/skills/ai-ml.svg",
-    summary: "Modeling, deep learning, and LLM systems from experimentation to deployment.",
+    group: "Advanced AI and Computer Vision",
+    value: "Advanced",
     skills: [
-      "Transformers",
-      "CNNs",
-      "RNNs",
+      "Vision Transformer (ViT)",
+      "Graph Neural Networks (GNN)",
+      "Diffusion Models",
       "GANs",
-      "LLMs",
-      "RAG",
-      "Computer Vision",
-      "NLP",
+      "NeRF",
+      "3D Gaussian Splatting",
+      "Fine-tuning",
+      "Model Optimization",
     ],
   },
   {
-    group: "Data Science",
-    image: "/skills/data-science.svg",
-    summary: "Insight extraction, statistical reasoning, and business-focused data storytelling.",
+    group: "LLM and NLP",
+    value: "Advanced",
     skills: [
-      "NumPy",
-      "Pandas",
-      "Matplotlib",
-      "Seaborn",
-      "Statistics",
-      "Feature Engineering",
-      "Model Evaluation",
+      "LLMs",
+      "RAG",
+      "LangChain",
+      "LangGraph",
+      "NLP",
+      "Prompt Engineering",
+      "Vector Databases",
+    ],
+  },
+  {
+    group: "Machine Learning and Deep Learning",
+    value: "Advanced",
+    skills: [
+      "Scikit-learn",
+      "PyTorch",
+      "TensorFlow",
+      "CNNs",
+      "RNNs",
+      "Transformers",
     ],
   },
   {
     group: "Data Engineering",
-    image: "/skills/data-engineering.svg",
-    summary: "Reliable pipelines, storage systems, and scalable processing for ML-ready data.",
+    value: "Strong",
     skills: [
-      "SQL",
       "MySQL",
       "MongoDB",
       "Spark",
       "Data Pipelines",
       "Data Validation",
-      "Vector Databases",
+      "Apache Airflow",
     ],
   },
   {
-    group: "MLOps / Backend / Cloud",
-    image: "/skills/mlops-cloud.svg",
-    summary: "Production delivery stack for model services, automation, and cloud deployment.",
+    group: "MLOps, Backend, and Cloud",
+    value: "Strong",
     skills: [
       "FastAPI",
       "REST APIs",
@@ -330,6 +337,28 @@ export const skillGroups = [
       "MLflow",
       "AWS EC2",
       "AWS S3",
+    ],
+  },
+  {
+    group: "Languages and Query",
+    value: "Strong",
+    skills: [
+      "Python",
+      "SQL",
+      "C++",
+    ],
+  },
+  {
+    group: "Data Science and Analytics",
+    value: "Strong",
+    skills: [
+      "NumPy",
+      "Pandas",
+      "Matplotlib",
+      "Seaborn",
+      "Statistics",
+      "Feature Engineering",
+      "EDA",
     ],
   },
 ];
@@ -359,5 +388,32 @@ export const socialCards = [
     label: "LeetCode",
     blurb: "Algorithmic strength, contest rating, and multi-language problem solving.",
     href: "https://leetcode.com/u/damodarryadav/",
+  },
+];
+
+export const certificates = [
+  {
+    title: "AI / ML / Data Certificates",
+    issuer: "Google Drive Folder",
+    href: "https://drive.google.com/drive/folders/1J8qIBNgLI5ToIllfflUwaxqac-5jxDWT?usp=sharing",
+    note: "Collection of completed certificates across AI, ML, data, and engineering tracks.",
+  },
+];
+
+export const education = [
+  {
+    level: "SSC",
+    institute: "Model English High School",
+    result: "92%",
+  },
+  {
+    level: "HSC",
+    institute: "R.K Talreja College of Science and Commerce",
+    result: "65%",
+  },
+  {
+    level: "B.E CSE",
+    institute: "Thakur College of Engineering and Technology",
+    result: "CGPA 9.2",
   },
 ];

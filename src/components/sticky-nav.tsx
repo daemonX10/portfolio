@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import ThemeToggle from "@/components/theme-toggle";
 
 type SocialLink = {
   label: string;
@@ -9,6 +10,7 @@ type SocialLink = {
 
 type StickyNavProps = {
   socialLinks: SocialLink[];
+  resumeHref: string;
 };
 
 const navLinks = [
@@ -18,7 +20,7 @@ const navLinks = [
   { id: "contact", label: "Contact" },
 ];
 
-export default function StickyNav({ socialLinks }: StickyNavProps) {
+export default function StickyNav({ socialLinks, resumeHref }: StickyNavProps) {
   const [activeSection, setActiveSection] = useState<string>("projects");
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
 
@@ -83,7 +85,11 @@ export default function StickyNav({ socialLinks }: StickyNavProps) {
           })}
         </nav>
 
-        <div className="hidden flex-wrap gap-2 md:flex">
+        <div className="hidden items-center gap-2 md:flex">
+          <a href={resumeHref} target="_blank" rel="noreferrer" className="action-btn primary !py-1.5 !px-3 !text-xs">
+            Resume
+          </a>
+          <ThemeToggle />
           {socialLinks.map((item) => (
             <a
               key={item.label}
@@ -115,6 +121,13 @@ export default function StickyNav({ socialLinks }: StickyNavProps) {
               );
             })}
           </nav>
+
+          <div className="mt-3 flex flex-wrap gap-2">
+            <a href={resumeHref} target="_blank" rel="noreferrer" className="action-btn primary !py-1.5 !px-3 !text-xs">
+              Resume
+            </a>
+            <ThemeToggle />
+          </div>
 
           <div className="mt-3 flex flex-wrap gap-2">
             {socialLinks.map((item) => (

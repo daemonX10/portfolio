@@ -2,7 +2,10 @@ import Image from "next/image";
 import ProjectGallery from "@/components/project-gallery";
 import StickyNav from "@/components/sticky-nav";
 import {
+  certificates,
+  education,
   experience,
+  keyAchievements,
   primarySocialOrder,
   profile,
   projects,
@@ -75,7 +78,7 @@ export default async function Home() {
       <div className="grain-overlay" aria-hidden="true" />
 
       <main className="relative mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-6 sm:px-8 sm:py-10 lg:gap-10">
-        <StickyNav socialLinks={primarySocialOrder} />
+        <StickyNav socialLinks={primarySocialOrder} resumeHref={profile.links.resume} />
 
         <section className="section-card reveal px-5 py-7 sm:px-8 sm:py-10">
           <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
@@ -194,28 +197,74 @@ export default async function Home() {
           </article>
 
           <article id="skills" className="section-card reveal delay-3 px-5 py-7 sm:px-8 sm:py-9">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#355c93]">Skill Matrix</p>
-            <h3 className="display-heading mt-1 text-4xl text-[#102347] sm:text-5xl">Core Skills and Tooling</h3>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#355c93]">Skills</p>
+            <h3 className="display-heading mt-1 text-4xl text-[#102347] sm:text-5xl">Technical Stack</h3>
 
-            <div className="mt-5 grid gap-4">
+            <div className="mt-6 grid gap-3">
               {skillGroups.map((group) => (
-                <div key={group.group} className="skill-card overflow-hidden rounded-2xl border border-[#d6deea] bg-white p-4">
-                  <div className="relative mb-4 h-30 overflow-hidden rounded-xl">
-                    <Image src={group.image} alt={`${group.group} skill illustration`} fill className="object-cover" sizes="(max-width: 768px) 100vw, 45vw" />
+                <div key={group.group} className="skill-block rounded-2xl border border-[#d6deea] bg-[#f9fbff] px-4 py-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <h4 className="text-sm font-bold uppercase tracking-[0.12em] text-[#3b6397]">{group.group}</h4>
+                    <p className="text-xs font-bold uppercase tracking-[0.08em] text-[#3f6396]">
+                      {group.value} · {group.skills.length} skills
+                    </p>
                   </div>
-                  <h4 className="text-sm font-bold uppercase tracking-[0.14em] text-[#3b6397]">{group.group}</h4>
-                  <p className="mt-2 text-sm leading-6 text-[#2a446e]">{group.summary}</p>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {group.skills.map((skill) => (
-                      <span key={skill} className="chip">
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
+                  <p className="mt-2 text-sm leading-6 text-[#2a446e]">
+                    {[...group.skills].sort((a, b) => a.localeCompare(b)).join(" · ")}
+                  </p>
                 </div>
               ))}
             </div>
           </article>
+        </section>
+
+        <section className="section-card reveal px-5 py-7 sm:px-8 sm:py-10">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#355c93]">Achievements</p>
+          <h3 className="display-heading mt-1 text-4xl text-[#102347] sm:text-5xl">Highlights and Wins</h3>
+          <div className="mt-5 grid gap-4 sm:grid-cols-2">
+            {keyAchievements.map((item) => (
+              <article key={item} className="achievement-card rounded-2xl border border-[#d6deea] bg-[#f9fbff] p-4">
+                <p className="text-sm leading-7 text-[#2a446e]">{item}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="section-card reveal px-5 py-7 sm:px-8 sm:py-10">
+          <div className="grid gap-6 lg:grid-cols-2">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#355c93]">Certificates</p>
+              <h3 className="display-heading mt-1 text-4xl text-[#102347] sm:text-5xl">Learning Credentials</h3>
+              <div className="mt-5 grid gap-4">
+                {certificates.map((cert) => (
+                  <article key={cert.title} className="achievement-card rounded-2xl border border-[#d6deea] bg-[#f9fbff] p-4">
+                    <h4 className="text-lg font-bold text-[#12233f]">{cert.title}</h4>
+                    <p className="mt-1 text-sm font-semibold text-[#3f6396]">{cert.issuer}</p>
+                    <p className="mt-2 text-sm leading-6 text-[#2a446e]">{cert.note}</p>
+                    <a className="action-btn ghost mt-4 inline-flex !px-3 !py-2" href={cert.href} target="_blank" rel="noreferrer">
+                      View Certificates
+                    </a>
+                  </article>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#355c93]">Education</p>
+              <h3 className="display-heading mt-1 text-4xl text-[#102347] sm:text-5xl">Academic Background</h3>
+              <div className="mt-5 grid gap-3">
+                {education.map((item) => (
+                  <article key={item.level} className="achievement-card rounded-2xl border border-[#d6deea] bg-[#f9fbff] px-4 py-3">
+                    <div className="grid items-center gap-1 sm:grid-cols-[130px_1fr_auto]">
+                      <p className="text-sm font-bold text-[#12233f]">{item.level}</p>
+                      <p className="text-sm font-semibold text-[#3f6396]">{item.institute}</p>
+                      <p className="text-sm font-semibold text-[#2a446e]">{item.result}</p>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </div>
         </section>
 
         <section id="profiles" className="section-card reveal px-5 py-7 sm:px-8 sm:py-10">
