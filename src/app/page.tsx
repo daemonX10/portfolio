@@ -1,64 +1,272 @@
 import Image from "next/image";
+import ProjectGallery from "@/components/project-gallery";
+import StickyNav from "@/components/sticky-nav";
+import {
+  experience,
+  primarySocialOrder,
+  profile,
+  projects,
+  quickProof,
+  skillGroups,
+  socialCards,
+} from "@/data/portfolio";
 
-export default function Home() {
+type GitHubUser = {
+  public_repos: number;
+  followers: number;
+  following: number;
+};
+
+type GitHubRepo = {
+  id: number;
+  name: string;
+  html_url: string;
+  stargazers_count: number;
+  fork: boolean;
+  language: string | null;
+};
+
+async function getGitHubProof() {
+  try {
+    const [userRes, reposRes] = await Promise.all([
+      fetch("https://api.github.com/users/daemonX10", {
+        next: { revalidate: 21600 },
+      }),
+      fetch("https://api.github.com/users/daemonX10/repos?per_page=100&sort=updated", {
+        next: { revalidate: 21600 },
+      }),
+    ]);
+
+    if (!userRes.ok || !reposRes.ok) {
+      return null;
+    }
+
+    const user = (await userRes.json()) as GitHubUser;
+    const repos = (await reposRes.json()) as GitHubRepo[];
+
+    const topRepos = repos
+      .filter((repo) => !repo.fork)
+      .sort((a, b) => b.stargazers_count - a.stargazers_count)
+      .slice(0, 3)
+      .map((repo) => ({
+        name: repo.name,
+        href: repo.html_url,
+        stars: repo.stargazers_count,
+        language: repo.language ?? "Mixed",
+      }));
+
+    const totalStars = repos.reduce((sum, repo) => sum + repo.stargazers_count, 0);
+
+    return {
+      user,
+      totalStars,
+      topRepos,
+    };
+  } catch {
+    return null;
+  }
+}
+
+export default async function Home() {
+  const githubProof = await getGitHubProof();
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className="portfolio-shell">
+      <div className="grain-overlay" aria-hidden="true" />
+
+      <main className="relative mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-6 sm:px-8 sm:py-10 lg:gap-10">
+        <StickyNav socialLinks={primarySocialOrder} />
+
+        <section className="section-card reveal px-5 py-7 sm:px-8 sm:py-10">
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+            <div className="chip">Open to AI/ML and Data Roles</div>
+            <div className="flex flex-wrap gap-2 text-sm font-semibold text-[#2d4e80]">
+              <a href="#projects">Projects</a>
+              <a href="#skills">Skills</a>
+              <a href="#contact">Contact</a>
+            </div>
+          </div>
+
+          <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#355c93]">
+                {profile.location}
+              </p>
+              <h1 className="display-heading mt-2 text-5xl leading-[0.9] text-[#102347] sm:text-7xl">
+                {profile.name}
+              </h1>
+              <h2 className="mt-3 text-lg font-bold text-[#284d7f] sm:text-xl">{profile.role}</h2>
+              <p className="mt-5 max-w-2xl text-base leading-7 text-[#253e65] sm:text-lg">
+                {profile.summary}
+              </p>
+
+              <div className="mt-7 flex flex-wrap gap-3">
+                <a className="action-btn primary" href={profile.links.resume} target="_blank" rel="noreferrer">
+                  Resume
+                </a>
+                {primarySocialOrder.map((item) => (
+                  <a key={item.label} className="action-btn ghost" href={item.href} target="_blank" rel="noreferrer">
+                    {item.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            <div className="impact-card grid gap-3 p-4 sm:p-5">
+              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#9fc5ff]">Proof Snapshot</p>
+              <div className="flex items-center gap-3 rounded-xl border border-white/15 bg-white/8 p-3">
+                <Image
+                  src={profile.avatar}
+                  alt={`${profile.name} profile image`}
+                  width={56}
+                  height={56}
+                  className="rounded-full border border-white/20"
+                />
+                <div>
+                  <p className="text-sm font-bold text-white">{profile.name}</p>
+                  <p className="text-xs text-[#b6d2ff]">AI/ML Engineer · Mumbai</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                {quickProof.map((item) => (
+                  <div key={item.label} className="rounded-xl bg-white/8 p-3">
+                    <p className="text-base font-bold text-white">{item.value}</p>
+                    <p className="text-xs text-[#b6d2ff]">{item.label}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="rounded-xl border border-white/15 bg-white/5 p-4">
+                <p className="text-xs uppercase tracking-[0.17em] text-[#9fc5ff]">Live GitHub</p>
+                {githubProof ? (
+                  <div className="mt-2 space-y-2 text-xs text-[#dbe9ff]">
+                    <p>{githubProof.user.public_repos} repos · {githubProof.totalStars} stars · {githubProof.user.followers} followers</p>
+                    {githubProof.topRepos[0] ? (
+                      <a
+                        className="block rounded-lg border border-white/15 px-2 py-1 hover:bg-white/10"
+                        href={githubProof.topRepos[0].href}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Top repo: {githubProof.topRepos[0].name} · {githubProof.topRepos[0].stars} stars
+                      </a>
+                    ) : null}
+                  </div>
+                ) : (
+                  <p className="mt-2 text-xs text-[#dbe9ff]">Live metrics unavailable right now.</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="projects" className="section-card reveal delay-1 px-5 py-7 sm:px-8 sm:py-10">
+          <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#355c93]">Featured Work</p>
+              <h3 className="display-heading text-4xl text-[#102347] sm:text-5xl">Projects with Code, Data, and Media</h3>
+            </div>
+          </div>
+          <ProjectGallery projects={projects} />
+        </section>
+
+        <section className="grid gap-6 lg:grid-cols-2">
+          <article className="section-card reveal delay-2 px-5 py-7 sm:px-8 sm:py-9">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#355c93]">Experience</p>
+            <h3 className="display-heading mt-1 text-4xl text-[#102347] sm:text-5xl">Hands-on Experience</h3>
+
+            <div className="mt-5 space-y-4">
+              {experience.map((item) => (
+                <div key={item.title} className="experience-card rounded-2xl border border-[#d6deea] bg-[#f9fbff] p-4">
+                  <h4 className="text-lg font-bold text-[#152c50]">{item.title}</h4>
+                  <p className="text-sm font-semibold text-[#3f6396]">
+                    {item.company} · {item.period}
+                  </p>
+                  <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-[#274472]">
+                    {item.details.map((line) => (
+                      <li key={line}>{line}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </article>
+
+          <article id="skills" className="section-card reveal delay-3 px-5 py-7 sm:px-8 sm:py-9">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#355c93]">Skill Matrix</p>
+            <h3 className="display-heading mt-1 text-4xl text-[#102347] sm:text-5xl">Core Skills and Tooling</h3>
+
+            <div className="mt-5 grid gap-4">
+              {skillGroups.map((group) => (
+                <div key={group.group} className="skill-card overflow-hidden rounded-2xl border border-[#d6deea] bg-white p-4">
+                  <div className="relative mb-4 h-30 overflow-hidden rounded-xl">
+                    <Image src={group.image} alt={`${group.group} skill illustration`} fill className="object-cover" sizes="(max-width: 768px) 100vw, 45vw" />
+                  </div>
+                  <h4 className="text-sm font-bold uppercase tracking-[0.14em] text-[#3b6397]">{group.group}</h4>
+                  <p className="mt-2 text-sm leading-6 text-[#2a446e]">{group.summary}</p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {group.skills.map((skill) => (
+                      <span key={skill} className="chip">
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </article>
+        </section>
+
+        <section id="profiles" className="section-card reveal px-5 py-7 sm:px-8 sm:py-10">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#355c93]">Public Profiles</p>
+          <h3 className="display-heading mt-1 text-4xl text-[#102347] sm:text-5xl">Where You Can Verify Everything</h3>
+          <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {socialCards.map((card) => (
+              <a
+                key={card.label}
+                href={card.href}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-2xl border border-[#d6deea] bg-[#f9fbff] p-4 transition hover:-translate-y-0.5"
+              >
+                <p className="text-lg font-extrabold text-[#12233f]">{card.label}</p>
+                <p className="mt-2 text-sm leading-6 text-[#2a446e]">{card.blurb}</p>
+              </a>
+            ))}
+          </div>
+        </section>
+
+        <section id="contact" className="section-card reveal px-5 py-8 sm:px-8 sm:py-10">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#355c93]">Contact</p>
+          <h3 className="display-heading mt-1 text-4xl text-[#102347] sm:text-5xl">Let&apos;s Build Something Useful</h3>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-[#2a446e] sm:text-base">
+            I am available for AI/ML engineering, data science, and data engineering collaborations. Reach out with ideas, roles, or project scopes.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+
+          <div className="mt-6 flex flex-wrap gap-3">
+            <a className="action-btn primary" href={profile.links.mailto}>
+              {profile.email}
+            </a>
+            <a className="action-btn ghost" href={profile.links.whatsapp} target="_blank" rel="noreferrer">
+              WhatsApp
+            </a>
+            <a className="action-btn ghost" href={profile.links.resume} target="_blank" rel="noreferrer">
+              View Resume
+            </a>
+            <a className="action-btn ghost" href="/resume/download">
+              Download Resume
+            </a>
+            {primarySocialOrder.map((item) => (
+              <a key={item.label} className="action-btn ghost" href={item.href} target="_blank" rel="noreferrer">
+                {item.label}
+              </a>
+            ))}
+            <a className="action-btn ghost" href={profile.links.leetcode} target="_blank" rel="noreferrer">
+              LeetCode
+            </a>
+          </div>
+        </section>
       </main>
     </div>
   );
